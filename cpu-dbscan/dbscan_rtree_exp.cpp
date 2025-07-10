@@ -45,8 +45,8 @@ bool searchBoxCallback(int id) {
   return true;
 }
 
-int importDataset(char const *fname, int N, double **dataset) {
-  FILE *fp = fopen(fname, "r");
+int importDataset(char const* fname, int N, double** dataset) {
+  FILE* fp = fopen(fname, "r");
 
   if (!fp) {
     printf("Unable to open file\n");
@@ -59,7 +59,7 @@ int importDataset(char const *fname, int N, double **dataset) {
   while (fgets(buf, 4096, fp) && rowCnt < N) {
     colCnt = 0;
 
-    char *field = strtok(buf, ",");
+    char* field = strtok(buf, ",");
     long double tmp;
     sscanf(field, "%Lf", &tmp);
     dataset[rowCnt][colCnt] = tmp;
@@ -84,25 +84,25 @@ int importDataset(char const *fname, int N, double **dataset) {
 
 class DBSCAN {
  private:
-  double **dataset;
+  double** dataset;
   double epsilon;
   int minPoints;
   int cluster;
-  int *clusters;
+  int* clusters;
   double getDistance(int center, int neighbor);
   vector<int> findNeighbors(int pos);
   RTree<double, double, 2, double> tree;
 
  public:
-  DBSCAN(double **loadData, double eps, int minPts);
+  DBSCAN(double** loadData, double eps, int minPts);
   ~DBSCAN();
   void run();
   void results();
 };
 
-int main(int, char **) {
+int main(int, char**) {
   // Generate random datasets
-  char *datasetPath = "";
+  char* datasetPath = "";
   double setOfR[5];
   int setOfMinPts[5];
   int defaultMin, defaultPts;
@@ -132,8 +132,10 @@ int main(int, char **) {
     defaultR = 0.008;
 
     defaultPts = 160000;
-
-    datasetPath = "/data/dbscan/Porto_taxi_data.csv";
+    // 需要下载数据集后，调整数据集存储路径
+    datasetPath =
+        "/home/hgl/workspace/datasets/CUDA_DCLUST_HiPC2021/"
+        "CUDA_DCLUST_datasets/Porto_Taxi_Service_Trajectory.csv";
   }
 
   if (NGSI) {
@@ -159,8 +161,10 @@ int main(int, char **) {
     defaultR = 1.25;
 
     defaultPts = 400000;
-
-    datasetPath = "/data/dbscan/NGSIM_Data.txt";
+    // 需要下载数据集后，调整数据集存储路径
+    datasetPath =
+        "/home/hgl/workspace/datasets/CUDA_DCLUST_HiPC2021/"
+        "CUDA_DCLUST_datasets/Next_Generation_Simulation_(NGSIM).txt";
   }
 
   if (SPATIAL) {
@@ -186,8 +190,10 @@ int main(int, char **) {
     defaultR = 0.8;
 
     defaultPts = 400000;
-
-    datasetPath = "/home/mpoudel/datasets/3D_spatial_network.csv";
+    // 需要下载数据集后，调整数据集存储路径
+    datasetPath =
+        "/home/hgl/workspace/datasets/CUDA_DCLUST_HiPC2021/"
+        "CUDA_DCLUST_datasets/3D_spatial_network.csv";
   }
 
   if (IONO2D) {
@@ -213,8 +219,10 @@ int main(int, char **) {
     defaultR = 1.5;
 
     defaultPts = 400000;
-
-    datasetPath = "/data/geodata/iono_20min_2Mpts_2D.txt";
+    // 需要下载数据集后，调整数据集存储路径
+    datasetPath =
+        "/home/hgl/workspace/datasets/CUDA_DCLUST_HiPC2021/"
+        "CUDA_DCLUST_datasets/2D_iono.txt";
   }
 
   // Different set of R
@@ -225,9 +233,9 @@ int main(int, char **) {
     totalTimeStart = clock();
 
     DATASET_SIZE = defaultPts;
-    double **dataset = (double **)malloc(sizeof(double *) * DATASET_SIZE);
+    double** dataset = (double**)malloc(sizeof(double*) * DATASET_SIZE);
     for (int i = 0; i < DATASET_SIZE; i++) {
-      dataset[i] = (double *)malloc(sizeof(double) * DIMENTION);
+      dataset[i] = (double*)malloc(sizeof(double) * DIMENTION);
     }
     importDataset(datasetPath, DATASET_SIZE, dataset);
     // Initialize DBSCAN with dataset
@@ -257,9 +265,9 @@ int main(int, char **) {
     totalTimeStart = clock();
 
     DATASET_SIZE = defaultPts;
-    double **dataset = (double **)malloc(sizeof(double *) * DATASET_SIZE);
+    double** dataset = (double**)malloc(sizeof(double*) * DATASET_SIZE);
     for (int i = 0; i < DATASET_SIZE; i++) {
-      dataset[i] = (double *)malloc(sizeof(double) * DIMENTION);
+      dataset[i] = (double*)malloc(sizeof(double) * DIMENTION);
     }
     importDataset(datasetPath, DATASET_SIZE, dataset);
     // Initialize DBSCAN with dataset
@@ -289,9 +297,9 @@ int main(int, char **) {
     totalTimeStart = clock();
 
     DATASET_SIZE = setOfDataSize[i];
-    double **dataset = (double **)malloc(sizeof(double *) * DATASET_SIZE);
+    double** dataset = (double**)malloc(sizeof(double*) * DATASET_SIZE);
     for (int i = 0; i < DATASET_SIZE; i++) {
-      dataset[i] = (double *)malloc(sizeof(double) * DIMENTION);
+      dataset[i] = (double*)malloc(sizeof(double) * DIMENTION);
     }
     importDataset(datasetPath, DATASET_SIZE, dataset);
     // Initialize DBSCAN with dataset
@@ -316,12 +324,12 @@ int main(int, char **) {
   return 0;
 }
 
-DBSCAN::DBSCAN(double **loadData, double eps, int minPts) {
-  clusters = (int *)malloc(sizeof(int) * DATASET_SIZE);
+DBSCAN::DBSCAN(double** loadData, double eps, int minPts) {
+  clusters = (int*)malloc(sizeof(int) * DATASET_SIZE);
 
-  dataset = (double **)malloc(sizeof(double *) * DATASET_SIZE);
+  dataset = (double**)malloc(sizeof(double*) * DATASET_SIZE);
   for (int i = 0; i < DATASET_SIZE; i++) {
-    dataset[i] = (double *)malloc(sizeof(double) * DIMENTION);
+    dataset[i] = (double*)malloc(sizeof(double) * DIMENTION);
   }
 
   epsilon = eps;
@@ -361,7 +369,8 @@ void DBSCAN::run() {
   // Neighbors of the point
 
   for (int i = 0; i < DATASET_SIZE; i++) {
-    if (clusters[i] != 0) continue;
+    if (clusters[i] != 0)
+      continue;
     vector<int> neighbors;
     // Find neighbors of point P
     neighbors = findNeighbors(i);
@@ -380,13 +389,15 @@ void DBSCAN::run() {
       // Mark neighbour as point Q
       int dataIndex = neighbors[j];
 
-      if (dataIndex == i) continue;
+      if (dataIndex == i)
+        continue;
 
       if (clusters[dataIndex] == -1) {
         clusters[dataIndex] = cluster;
         continue;
       }
-      if (clusters[dataIndex] != 0) continue;
+      if (clusters[dataIndex] != 0)
+        continue;
 
       clusters[dataIndex] = cluster;
 
